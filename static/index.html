@@ -34,7 +34,16 @@
     <div id="messages"></div>
     <script>
       function main() {
-        let serverUrl = "ws://localhost:8082/ws";
+        const defaultServerUrl = "ws://localhost:8082/ws";
+
+        let serverUrl = defaultServerUrl;
+        try {
+          const url = new URL(window.location.href);
+          serverUrl = url.searchParams.get("serverUrl") || defaultServerUrl;
+        } catch (e) {
+          console.error(e);
+        }
+
         const echoMessageTypePing = 0;
         const echoMessageTypePong = 1;
 
