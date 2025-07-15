@@ -1,0 +1,69 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebSocket</title>
+    <style>
+      body {
+        margin: 0;
+      }
+
+      #messages {
+        height: 100vh;
+        overflow-y: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="messages"></div>
+    <script>
+      let serverUrl = "ws://localhost:8082/ws";
+
+      function createMessage(text) {
+        const message = document.createElement("div");
+        message.textContent = text;
+        return message;
+      }
+
+      function appendMessage(message, noFlush) {
+        const el = document.getElementById("messages");
+        el.appendChild(message);
+        if (!noFlush) {
+          el.scrollTop = el.scrollHeight - el.clientHeight;
+        }
+      }
+
+      function appendLog(text) {
+        const now = new Date().toISOString();
+        appendMessage(createMessage(`[${now}]: ${text}`));
+      }
+
+      const ws = new WebSocket(serverUrl);
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        const receivedAt = new Date().valueOf();
+        const delay = receivedAt - data.sendAt;
+        appendLog(`seq: ${data.seq} delay: ${delay}ms`);
+      };
+      let it = undefined;
+      ws.onopen = () => {
+        appendLog(`Connected to server: ${serverUrl}`);
+        let seq = 0;
+        it = window.setInterval(() => {
+          const sendAt = new Date().valueOf();
+          ws.send(JSON.stringify({ sendAt, seq }));
+          seq++;
+        }, 1000);
+      };
+      ws.onclose = () => {
+        appendLog(`Disconnected from server: ${serverUrl}`);
+        if (it !== undefined) {
+          window.clearInterval(it);
+        }
+      };
+      ws.onerror = (event) => {
+        appendLog(`Error: ${event}`);
+      };
+    </script>
+  </body>
+</html>
