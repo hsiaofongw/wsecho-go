@@ -1,0 +1,20 @@
+networks:
+  cloudflared:
+    external: true
+services:
+  web:
+    hostname: goecho-demo-web
+    container_name: goecho-demo-web
+    image: nginx:latest
+    volumes:
+      - ./static:/usr/share/nginx/html
+    restart: unless-stopped
+  server:
+    hostname: goecho-demo-server
+    container_name: goecho-demo-server
+    image: golang:1.24-bookworm
+    command: go run main.go
+    volumes:
+      - .:/app
+    working_dir: /app
+    restart: unless-stopped
