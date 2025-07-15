@@ -7,14 +7,19 @@ services:
     container_name: goecho-demo-web
     image: nginx:latest
     volumes:
-      - ./static:/usr/share/nginx/html
+      - ../../static:/usr/share/nginx/html
     restart: unless-stopped
+    networks:
+      - cloudflared
   server:
     hostname: goecho-demo-server
     container_name: goecho-demo-server
     image: golang:1.24-bookworm
     command: go run main.go
     volumes:
-      - .:/app
+      - ../../:/app
     working_dir: /app
     restart: unless-stopped
+    networks:
+      - cloudflared
+

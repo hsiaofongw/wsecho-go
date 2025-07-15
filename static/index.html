@@ -72,7 +72,7 @@
           if (data.type === echoMessageTypePong) {
             const serverReceivedAt = data.data.receivedAt;
             const clientReceivedAt = new Date().valueOf();
-            const rtt = clientReceivedAt - serverReceivedAt;
+            const rtt = clientReceivedAt - data.data.sendAt;
             const forwardDelay = clientReceivedAt - data.data.sendAt;
             const backwardDelay = serverReceivedAt - data.data.receivedAt;
 
