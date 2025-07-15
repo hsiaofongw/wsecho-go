@@ -1,0 +1,17 @@
+services:
+  web:
+    image: nginx:latest
+    ports:
+      - 8081:80
+    volumes:
+      - ./static:/usr/share/nginx/html
+    restart: unless-stopped
+  server:
+    image: golang:1.24-bookworm
+    ports:
+      - 8082:8082
+    command: go run main.go
+    volumes:
+      - .:/app
+    working_dir: /app
+    restart: unless-stopped
